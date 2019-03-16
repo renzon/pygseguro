@@ -1,12 +1,15 @@
 # pygseguro
-Projeto para construir um Wrapper Python para a API do Pagseguro
+Projeto para construir um Wrapper Python para a API do [Pagseguro versão 3](https://dev.pagseguro.uol.com.br/reference#ambiente-de-testes)
 
 [![Build Status](https://travis-ci.org/renzon/pygseguro.svg?branch=master)](https://travis-ci.org/renzon/pygseguro)
 [![codecov](https://codecov.io/gh/renzon/pygseguro/branch/master/graph/badge.svg)](https://codecov.io/gh/renzon/pygseguro)
 [![Updates](https://pyup.io/repos/github/renzon/pygseguro/shield.svg)](https://pyup.io/repos/github/renzon/pygseguro/)
 [![Python 3](https://pyup.io/repos/github/renzon/pygseguro/python-3-shield.svg)](https://pyup.io/repos/github/renzon/pygseguro/)
 
-Projeto escrito com Python 3.
+Projeto escrito com Python 3. A linguagem utilizada também para codificar será o português por duas razões:
+
+1. O Pagseguro em si é um Gateway brasileiro com sua documentação em português
+1. Essa lib está sendo desenvolvida no como projeto prático da turma Luciano Ramlho do curso [Python Pro](https://www.python.pro.br)
 
 # Contribuidores
 
@@ -23,6 +26,21 @@ pip install pipenv
 Para instalar a lib com pipenv:
 ```
 pipenv install pygseguro
+```
+
+# Como usar
+
+## Configuraçao Padrão
+
+Utilize essa configuração se as chamadas costumam usar sempre a mesma configuração
+```python
+>>> from pygseguro import set_config_padrao, get_config_padrao, Config
+>>> get_config_padrao()
+>>> cfg = Config(email='foo@bar.com', token='blah')
+>>> set_config_padrao(cfg)
+>>> get_config_padrao()
+Config(email='foo@bar.com', token='blah')
+
 ```
 
 # Como contribuir
