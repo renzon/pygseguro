@@ -51,10 +51,10 @@ Toda função/método deve ter annotations
 
 1. Faça o fork do projeto e clone or projeto: `git clone git@github.com:<seu_usuario>/pygseguro.git`
 1. Instale o pipenv: `pip install pipenv`
-1. Instale as dependêncais de dev: `pipenv install -d`
+1. Instale as dependências de dev: `pipenv install -d`
 1. Desenvolva a feature com testes
 1. Rode os teste localmente: `pipenv run pytest`
-1. Envie o pull request com teste e um só commit
+1. Envie o pull request com teste em um só commit
 1. Envie o PR para revisão
 1. Depois de revisado e corrigido, o PR será aceito e a lib postada no PyPi
 1. Coloque seu nome e username na porção contribuidores
