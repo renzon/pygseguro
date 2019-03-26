@@ -8,7 +8,9 @@ import pygseguro.config as _config
 
 __version__ = '0.1'
 
-Config = _config.Config  # Dando visibilidade na fachada para a classe Config
+ConfigConta = _config.ConfigConta  # Dando visibilidade na fachada para a classe ConfigConta
+ConfigApp = _config.ConfigApp
+Config = _config.Config
 
 
 def apagar_config_padrao() -> None:
@@ -29,6 +31,6 @@ def get_config_padrao() -> Config:
 def set_config_padrao(config: Config):
     """
     Função que altera configuração padrão da aplicação
-    :param config: Config
+    :param config: ConfigConta
     """
     _config.config_padrao = config
