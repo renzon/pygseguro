@@ -17,6 +17,7 @@ install:
 
 script:
   - pipenv run flake8 .
+  - pipenv run python -m doctest README.md
   - pipenv run pytest --cov=pygseguro
 
 after_success:
