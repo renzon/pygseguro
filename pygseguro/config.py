@@ -10,6 +10,7 @@ config_padrao = None
 PRODUCAO = 'https://ws.pagseguro.uol.com.br'
 SANDBOX = 'https://ws.sandbox.pagseguro.uol.com.br'
 
+
 class Config():
     def __init__(self, ambiente: str):
         self.ambiente = ambiente
