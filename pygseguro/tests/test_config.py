@@ -24,6 +24,18 @@ def test_config_padrao(cfg_conta: ConfigConta):
     assert get_config_padrao() is cfg_conta
 
 
+def test_token_omitido_repr_ConfigConta(cfg_conta: ConfigConta):
+    """Verifica se o token foi omitido no repr de ConfigConta"""
+    cfg_conta_expected = "ConfigConta(email='foo@bar.com', token='****')"
+    assert cfg_conta_expected == repr(cfg_conta)
+
+
+def test_token_omitido_repr_ConfigApp(cfg_app: ConfigApp):
+    """Verifica se o app_key foi omitido no repr de ConfigApp"""
+    cfg_app_expected = "ConfigApp(app_id='1234', app_key='*******')"
+    assert cfg_app_expected == repr(cfg_app)
+
+
 endpoints = pytest.mark.parametrize('endpoint', '/comprar /checkout /notificaes'.split())
 
 

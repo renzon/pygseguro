@@ -50,7 +50,8 @@ class ConfigConta(Config):
         self.email = email
 
     def __repr__(self) -> str:
-        return f'ConfigConta(email={self.email!r}, token={self.token!r})'
+        token_omitido = '*' * len(self.token)
+        return f'ConfigConta(email={self.email!r}, token={token_omitido!r})'
 
     def query_string(self) -> str:
         """
@@ -71,7 +72,8 @@ class ConfigApp(Config):
         self.app_id = app_id
 
     def __repr__(self) -> str:
-        return f'ConfigApp(app_id={self.app_id!r}, app_key={self.app_key!r})'
+        app_key_omitida = '*' * len(self.app_key)
+        return f'ConfigApp(app_id={self.app_id!r}, app_key={app_key_omitida!r})'
 
     def query_string(self) -> str:
         """
