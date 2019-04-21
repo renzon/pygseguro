@@ -40,7 +40,7 @@ Utilize essa configuração se as chamadas costumam usar sempre a mesma configur
 >>> cfg = ConfigConta(email='foo@bar.com', token='blah')
 >>> set_config_padrao(cfg)
 >>> get_config_padrao()
-ConfigConta(email='foo@bar.com', token='blah')
+ConfigConta(email='foo@bar.com', token='****')
 >>> cfg.construir_url('/caminho')
 'https://ws.pagseguro.uol.com.br/caminho?email=foo@bar.com&token=blah'
 
@@ -55,7 +55,7 @@ Você pode usar uma configuração por appId e appToken:
 >>> cfg_app = ConfigApp(app_id='1234', app_key='xpto')
 >>> set_config_padrao(cfg_app)
 >>> get_config_padrao()
-ConfigApp(app_id='1234', app_key='xpto')
+ConfigApp(app_id='1234', app_key='****')
 >>> cfg_app.construir_url('/outro_caminho')
 'https://ws.pagseguro.uol.com.br/outro_caminho?appID=1234&appKey=xpto'
 
