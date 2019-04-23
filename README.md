@@ -52,7 +52,7 @@ Você pode usar uma configuração por appId e appToken:
 ```python
 
 >>> from pygseguro import ConfigApp
->>> cfg_app = ConfigApp(app_id='1234', app_key='xpto')
+>>> cfg_app = ConfigApp(app_id='1234', app_key='xpto', )
 >>> set_config_padrao(cfg_app)
 >>> get_config_padrao()
 ConfigApp(app_id='1234', app_key='****')
@@ -62,6 +62,58 @@ ConfigApp(app_id='1234', app_key='****')
 
 ```
 
+
+# Criando planos de [pagamento recorrente automático](https://dev.pagseguro.uol.com.br/reference#api-pagamento-recorrente-criacao-do-plano)
+
+## Forma com passos intermediários:
+
+```python
+>>> from pygseguro import SANDBOX, CriadorPlanoRecorrente
+>>> from datetime import datetime
+>>> from decimal import Decimal
+>>> set_config_padrao(ConfigConta('renzo@python.pro.br', '396FC29DE4A54967BF6DCADE65100E88', SANDBOX))
+>>> criador = CriadorPlanoRecorrente()
+>>> plano_identificacao = criador.plano_automatico_idenficacao(
+...     'SEU_CODIGO_DE_REFERENCIA',
+...     'Plano Turma de Curso de Python',
+...     'Plano de pagamento da turma Luciano Ramalho',
+...     'renzo@python.pro.br')
+>>> freq_mensal = plano_identificacao.frequencia_mensal()
+>>> expiracao = freq_mensal.expiracao_em_meses(meses=10)
+>>> trial = expiracao.trial(dias=2)
+>>> limite_de_uso = trial.limite_de_uso(100)
+>>> valores_automaticos = limite_de_uso.valores_automaticos(Decimal('180.00'), Decimal('30.39'))
+>>> urls_gancho = valores_automaticos.urls_gancho(
+...     'https://seusite.com.br/obrigado', 'https://seusite.com.br/revisar', 'https://seusite.com.br/cancelar'
+... )
+>>> plano_recorrente=urls_gancho.criar_no_pagseguro()
+>>> isinstance(plano_recorrente.codigo, str)
+True
+>>> isinstance(plano_recorrente.criacao, datetime)
+True
+
+```
+
+
+## Forma direta:
+
+```python
+>>> plano_recorrente = CriadorPlanoRecorrente().plano_automatico_idenficacao(
+...     'SEU_CODIGO_DE_REFERENCIA',
+...     'Plano Turma de Curso de Python',
+...     'Plano de pagamento da turma Luciano Ramalho',
+...     'renzo@python.pro.br'
+... ).frequencia_mensal().expiracao_em_meses(meses=10).trial(dias=2).limite_de_uso(100).valores_automaticos(
+...     Decimal('180.00'), Decimal('30.39')
+... ).urls_gancho(
+...     'https://seusite.com.br/obrigado', 'https://seusite.com.br/revisar', 'https://seusite.com.br/cancelar'
+... ).criar_no_pagseguro()
+>>> isinstance(plano_recorrente.codigo, str)
+True
+>>> isinstance(plano_recorrente.criacao, datetime)
+True
+
+```
 
 
 # Como contribuir

@@ -8,8 +8,11 @@ flake8 = "*"
 pytest = "*"
 pytest-cov = "*"
 codecov = "*"
+responses = "*"
 
 [packages]
+requests = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.7"
