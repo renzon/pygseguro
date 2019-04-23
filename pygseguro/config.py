@@ -9,6 +9,7 @@ Doc da API: https://dev.pagseguro.uol.com.br/reference#autenticacao
 config_padrao = None
 
 PRODUCAO = 'https://ws.pagseguro.uol.com.br'
+SANDBOX = 'https://ws.sandbox.pagseguro.uol.com.br'
 
 
 class Config():
@@ -82,3 +83,11 @@ class ConfigApp(Config):
         :return:
         """
         return f'appID={self.app_id}&appKey={self.app_key}'
+
+
+def get_config_padrao() -> Config:
+    """
+    Função que retorna configuração padrão atual da aplicação
+    :return: Configuração atual
+    """
+    return config_padrao
