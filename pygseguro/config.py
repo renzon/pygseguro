@@ -3,6 +3,7 @@ Esse módulo contém a configuração padrão das chamadas e fornece uma classe 
 configuração
 
 Doc da API: https://dev.pagseguro.uol.com.br/reference#autenticacao
+
 """
 
 config_padrao = None
