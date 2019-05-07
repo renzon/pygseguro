@@ -115,29 +115,7 @@ class LimiteDeUso(PassoDePlanoRecorrente):
         return valores
 
 
-class ValoresAutomaticos(PassoDePlanoRecorrente):
-    def _manipular_payload(self, valor_periodico: Decimal, taxa_adesao: Decimal = None):
-        self._pre_approval['amountPerPayment'] = _to_decimal_string(valor_periodico)
-        if taxa_adesao is not None:
-            self._pre_approval['membershipFee'] = _to_decimal_string(taxa_adesao)
-
-    def urls_gancho(self, redirecionamento_url: str = None, revisao_url: str = None,
-                    cancelamento_url: str = None) -> 'UrlsGancho':
-        urls = self._construir_proximo_passo(UrlsGancho)
-        urls._manipular_payload(redirecionamento_url, revisao_url, cancelamento_url)
-        return urls
-
-
-class UrlsGancho(PassoDePlanoRecorrente):
-    def _manipular_payload(self, redirecionamento_url: str = None, revisao_url: str = None,
-                           cancelamento_url: str = None):
-        if cancelamento_url:
-            self._pre_approval['cancelURL'] = cancelamento_url
-        if redirecionamento_url:
-            self._main_data['redirectURL'] = redirecionamento_url
-        if revisao_url:
-            self._main_data['reviewURL'] = revisao_url
-
+class UltimoPasso(PassoDePlanoRecorrente):
     def criar_no_pagseguro(self) -> 'PlanoAutomaticoRecorrente':
         """
         Cria um plano automático na conta do pagseguro
@@ -152,6 +130,30 @@ class UrlsGancho(PassoDePlanoRecorrente):
         codigo_data = response.json()
         dt = datetime.fromisoformat(codigo_data['date']).astimezone(pytz.UTC)
         return PlanoAutomaticoRecorrente(codigo_data['code'], dt)
+
+
+class ValoresAutomaticos(UltimoPasso):
+    def _manipular_payload(self, valor_periodico: Decimal, taxa_adesao: Decimal = None):
+        self._pre_approval['amountPerPayment'] = _to_decimal_string(valor_periodico)
+        if taxa_adesao is not None:
+            self._pre_approval['membershipFee'] = _to_decimal_string(taxa_adesao)
+
+    def urls_gancho(self, redirecionamento_url: str = None, revisao_url: str = None,
+                    cancelamento_url: str = None) -> 'UrlsGancho':
+        urls = self._construir_proximo_passo(UrlsGancho)
+        urls._manipular_payload(redirecionamento_url, revisao_url, cancelamento_url)
+        return urls
+
+
+class UrlsGancho(UltimoPasso):
+    def _manipular_payload(self, redirecionamento_url: str = None, revisao_url: str = None,
+                           cancelamento_url: str = None):
+        if cancelamento_url:
+            self._pre_approval['cancelURL'] = cancelamento_url
+        if redirecionamento_url:
+            self._main_data['redirectURL'] = redirecionamento_url
+        if revisao_url:
+            self._main_data['reviewURL'] = revisao_url
 
 
 class PlanoAutomaticoRecorrente:
