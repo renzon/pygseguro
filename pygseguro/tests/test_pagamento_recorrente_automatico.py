@@ -18,16 +18,34 @@ def valores_automaticos():
         'Plano Turma de Curso de Python',
         'Plano de pagamento da turma Luciano Ramalho',
         'renzo@python.pro.br')
-    freq_mensal = plano_identificacao.frequencia_mensal()
-    expiracao = freq_mensal.expiracao_em_meses(meses=10)
-    return expiracao.trial(dias=2).limite_de_uso(100).valores_automaticos(Decimal('180.00'), Decimal('30.39'))
+    expiracao = plano_identificacao.expiracao_em_meses(meses=10)
+    return expiracao.valores_automaticos(Decimal('180.00'), Decimal('30.39'))
 
 
 @pytest.fixture
 def gerador_plano_recorrente_automatico(valores_automaticos):
-    urls_gancho = valores_automaticos.urls_gancho('https://seusite.com.br/obrigado', 'https://seusite.com.br/revisar',
-                                                  'https://seusite.com.br/cancelar')
+    freq_mensal = valores_automaticos.frequencia_mensal()
+    limite_de_uso = freq_mensal.limite_de_uso(100)
+    trial = limite_de_uso.trial(dias=2)
+    urls_gancho = trial.urls_gancho('https://seusite.com.br/obrigado', 'https://seusite.com.br/revisar',
+                                    'https://seusite.com.br/cancelar')
     return urls_gancho
+
+
+@pytest.fixture
+def expected():
+    return {
+        'reference': 'SEU_CODIGO_DE_REFERENCIA',
+        'preApproval': {
+            'charge': 'AUTO', 'name': 'Plano Turma de Curso de Python',
+            'details': 'Plano de pagamento da turma Luciano Ramalho', 'amountPerPayment': '180.00',
+            'membershipFee': '30.39', 'period': 'MONTHLY',
+            'expiration': {
+                'value': 10, 'unit': 'MONTHS'
+            }
+        },
+        'receiver': {'email': 'renzo@python.pro.br'}
+    }
 
 
 @responses.activate
@@ -50,48 +68,70 @@ def test_criar_plano_no_pagseguro_headers(gerador_plano_recorrente_automatico):
 
 
 @responses.activate
-def test_criar_plano_no_pagseguro_payload(gerador_plano_recorrente_automatico):
+def test_criar_plano_no_pagseguro_payload(gerador_plano_recorrente_automatico, expected):
     responses.add(responses.POST, 'https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request',
                   json={'code': '5CDF6542C6C6D5F114674FB885E40FC0', 'date': '2019-04-29T21:38:04-03:00'}, status=200)
     gerador_plano_recorrente_automatico.criar_no_pagseguro()
 
-    expected = {
-        'reference': 'SEU_CODIGO_DE_REFERENCIA', 'maxUses': 100, 'redirectURL': 'https://seusite.com.br/obrigado',
-        'reviewURL': 'https://seusite.com.br/revisar',
-        'preApproval': {
-            'charge': 'AUTO', 'name': 'Plano Turma de Curso de Python',
-            'details': 'Plano de pagamento da turma Luciano Ramalho', 'amountPerPayment': '180.00',
-            'trialPeriodDuration': 2, 'membershipFee': '30.39', 'period': 'MONTHLY',
-            'cancelURL': 'https://seusite.com.br/cancelar',
-            'expiration': {
-                'value': 10, 'unit': 'MONTHS'
-            }
-        },
-        'receiver': {'email': 'renzo@python.pro.br'}
-    }
+    expected['maxUses'] = 100
+    expected['preApproval']['trialPeriodDuration'] = 2
+    expected['redirectURL'] = 'https://seusite.com.br/obrigado'
+    expected['reviewURL'] = 'https://seusite.com.br/revisar'
+    expected['preApproval']['cancelURL'] = 'https://seusite.com.br/cancelar'
+
     payload = responses.calls[0].request.body
     decodec_payload = json.loads(payload, encoding='UTF-8')
     assert expected == decodec_payload
 
 
 @responses.activate
-def test_criar_plano_sem_urls_gancho(valores_automaticos):
+def test_criar_plano_sem_urls_gancho(valores_automaticos, expected):
     responses.add(responses.POST, 'https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request',
                   json={'code': '5CDF6542C6C6D5F114674FB885E40FC0', 'date': '2019-04-29T21:38:04-03:00'}, status=200)
-    valores_automaticos.criar_no_pagseguro()
+    valores_automaticos.frequencia_mensal().limite_de_uso(100).trial(2).criar_no_pagseguro()
 
-    expected = {
-        'reference': 'SEU_CODIGO_DE_REFERENCIA', 'maxUses': 100,
-        'preApproval': {
-            'charge': 'AUTO', 'name': 'Plano Turma de Curso de Python',
-            'details': 'Plano de pagamento da turma Luciano Ramalho', 'amountPerPayment': '180.00',
-            'trialPeriodDuration': 2, 'membershipFee': '30.39', 'period': 'MONTHLY',
-            'expiration': {
-                'value': 10, 'unit': 'MONTHS'
-            }
-        },
-        'receiver': {'email': 'renzo@python.pro.br'}
-    }
+    expected['maxUses'] = 100
+    expected['preApproval']['trialPeriodDuration'] = 2
+
+    payload = responses.calls[0].request.body
+    decodec_payload = json.loads(payload, encoding='UTF-8')
+    assert expected == decodec_payload
+
+
+@responses.activate
+def test_criar_plano_com_limite_de_uso(valores_automaticos, expected):
+    responses.add(responses.POST, 'https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request',
+                  json={'code': '5CDF6542C6C6D5F114674FB885E40FC0', 'date': '2019-04-29T21:38:04-03:00'}, status=200)
+    valores_automaticos.frequencia_mensal().limite_de_uso(100).criar_no_pagseguro()
+    expected['maxUses'] = 100
+    payload = responses.calls[0].request.body
+    decodec_payload = json.loads(payload, encoding='UTF-8')
+    assert expected == decodec_payload
+
+
+@responses.activate
+def test_criar_plano_com_trial(valores_automaticos, expected):
+    responses.add(responses.POST, 'https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request',
+                  json={'code': '5CDF6542C6C6D5F114674FB885E40FC0', 'date': '2019-04-29T21:38:04-03:00'}, status=200)
+    valores_automaticos.frequencia_mensal().trial(2).criar_no_pagseguro()
+    expected['preApproval']['trialPeriodDuration'] = 2
+    payload = responses.calls[0].request.body
+    decodec_payload = json.loads(payload, encoding='UTF-8')
+    assert expected == decodec_payload
+
+
+@responses.activate
+def test_criar_plano_com_urls_gancho(valores_automaticos, expected):
+    responses.add(responses.POST, 'https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request',
+                  json={'code': '5CDF6542C6C6D5F114674FB885E40FC0', 'date': '2019-04-29T21:38:04-03:00'}, status=200)
+    valores_automaticos.frequencia_mensal().urls_gancho(
+        'https://seusite.com.br/obrigado', 'https://seusite.com.br/revisar', 'https://seusite.com.br/cancelar'
+    ).criar_no_pagseguro()
+
+    expected['redirectURL'] = 'https://seusite.com.br/obrigado'
+    expected['reviewURL'] = 'https://seusite.com.br/revisar'
+    expected['preApproval']['cancelURL'] = 'https://seusite.com.br/cancelar'
+
     payload = responses.calls[0].request.body
     decodec_payload = json.loads(payload, encoding='UTF-8')
     assert expected == decodec_payload
