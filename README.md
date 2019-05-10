@@ -9,11 +9,12 @@ Projeto para construir um Wrapper Python para a API do [Pagseguro versão 3](htt
 Projeto escrito com Python 3. A linguagem utilizada também para codificar será o português por duas razões:
 
 1. O Pagseguro em si é um Gateway brasileiro com sua documentação em português
-1. Essa lib está sendo desenvolvida no como projeto prático da turma Luciano Ramlho do curso [Python Pro](https://www.python.pro.br)
+1. Essa lib está sendo desenvolvida como projeto prático da turma Luciano Ramalho do curso [Python Pro](https://www.python.pro.br)
 
 # Contribuidores
 
 Renzo Nuccitelli (@renzon)
+Tânio Scherer (@taniodev)
 
 # Instalação
 
@@ -30,7 +31,7 @@ pipenv install pygseguro
 
 # Como usar
 
-## Configuraçao Padrão
+## Configuração Padrão
 
 Utilize essa configuração se as chamadas costumam usar sempre a mesma configuração
 ```python
@@ -78,12 +79,12 @@ ConfigApp(app_id='1234', app_key='****')
 ...     'Plano Turma de Curso de Python',
 ...     'Plano de pagamento da turma Luciano Ramalho',
 ...     'renzo@python.pro.br')
->>> freq_mensal = plano_identificacao.frequencia_mensal()
->>> expiracao = freq_mensal.expiracao_em_meses(meses=10)
->>> trial = expiracao.trial(dias=2)
+>>> expiracao = plano_identificacao.expiracao_em_meses(meses=10)
+>>> valores_automaticos = expiracao.valores_automaticos(Decimal('180.00'), Decimal('30.39'))
+>>> freq_mensal = valores_automaticos.frequencia_mensal()
+>>> trial = freq_mensal.trial(dias=2)
 >>> limite_de_uso = trial.limite_de_uso(100)
->>> valores_automaticos = limite_de_uso.valores_automaticos(Decimal('180.00'), Decimal('30.39'))
->>> urls_gancho = valores_automaticos.urls_gancho(
+>>> urls_gancho = limite_de_uso.urls_gancho(
 ...     'https://seusite.com.br/obrigado', 'https://seusite.com.br/revisar', 'https://seusite.com.br/cancelar'
 ... )
 >>> plano_recorrente=urls_gancho.criar_no_pagseguro()
@@ -103,9 +104,9 @@ True
 ...     'Plano Turma de Curso de Python',
 ...     'Plano de pagamento da turma Luciano Ramalho',
 ...     'renzo@python.pro.br'
-... ).frequencia_mensal().expiracao_em_meses(meses=10).trial(dias=2).limite_de_uso(100).valores_automaticos(
+... ).expiracao_em_meses(meses=10).valores_automaticos(
 ...     Decimal('180.00'), Decimal('30.39')
-... ).urls_gancho(
+... ).frequencia_mensal().trial(dias=2).limite_de_uso(100).urls_gancho(
 ...     'https://seusite.com.br/obrigado', 'https://seusite.com.br/revisar', 'https://seusite.com.br/cancelar'
 ... ).criar_no_pagseguro()
 >>> isinstance(plano_recorrente.codigo, str)
