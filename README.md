@@ -13,8 +13,9 @@ Projeto escrito com Python 3. A linguagem utilizada também para codificar será
 
 # Contribuidores
 
-Renzo Nuccitelli (@renzon)
-Tânio Scherer (@taniodev)
+Barth Junior (@barthjr), 
+Renzo Nuccitelli (@renzon),
+Tânio Scherer (@taniodev) 
 
 # Instalação
 
