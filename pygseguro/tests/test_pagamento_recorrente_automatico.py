@@ -135,3 +135,26 @@ def test_criar_plano_com_urls_gancho(valores_automaticos, expected):
     payload = responses.calls[0].request.body
     decodec_payload = json.loads(payload, encoding='UTF-8')
     assert expected == decodec_payload
+
+
+@responses.activate
+@pytest.mark.parametrize(
+    'funcao_tipo_frequencia, tipo_frequencia',
+    [
+        ('frequencia_semanal', 'WEEKLY'),
+        ('frequencia_mensal', 'MONTHLY'),
+        ('frequencia_bimestral', 'BIMONTHLY'),
+        ('frequencia_semestral', 'SEMIANNUALLY'),
+        ('frequencia_anual', 'YEARLY'),
+    ]
+)
+def test_criar_plano_com_tipos_de_frequencias(valores_automaticos, expected, funcao_tipo_frequencia, tipo_frequencia):
+    responses.add(responses.POST, 'https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request',
+                  json={'code': '5CDF6542C6C6D5F114674FB885E40FC0', 'date': '2019-04-29T21:38:04-03:00'}, status=200)
+    frequencia = getattr(valores_automaticos, funcao_tipo_frequencia)
+    frequencia().criar_no_pagseguro()
+    expected['preApproval']['period'] = tipo_frequencia
+
+    payload = responses.calls[0].request.body
+    decodec_payload = json.loads(payload, encoding='UTF-8')
+    assert expected == decodec_payload

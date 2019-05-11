@@ -83,9 +83,24 @@ class ValoresAutomaticos(PassoDePlanoRecorrente):
         if taxa_adesao is not None:
             self._pre_approval['membershipFee'] = _to_decimal_string(taxa_adesao)
 
-    def frequencia_mensal(self):
+    def frequencia_semanal(self) -> 'FrequenciaPlanoAutomatico':
+        return self._setar_frequencia(FrequenciaPlanoAutomatico.WEEKLY)
+
+    def frequencia_mensal(self) -> 'FrequenciaPlanoAutomatico':
+        return self._setar_frequencia(FrequenciaPlanoAutomatico.MONTHLY)
+
+    def frequencia_bimestral(self) -> 'FrequenciaPlanoAutomatico':
+        return self._setar_frequencia(FrequenciaPlanoAutomatico.BIMONTHLY)
+
+    def frequencia_semestral(self) -> 'FrequenciaPlanoAutomatico':
+        return self._setar_frequencia(FrequenciaPlanoAutomatico.SEMIANNUALLY)
+
+    def frequencia_anual(self) -> 'FrequenciaPlanoAutomatico':
+        return self._setar_frequencia(FrequenciaPlanoAutomatico.YEARLY)
+
+    def _setar_frequencia(self, tipo_frequencia: str) -> 'FrequenciaPlanoAutomatico':
         frequencia = self._construir_proximo_passo(FrequenciaPlanoAutomatico)
-        frequencia._manipular_payload(FrequenciaPlanoAutomatico.MONTHLY)
+        frequencia._manipular_payload(tipo_frequencia)
         return frequencia
 
 
@@ -130,7 +145,11 @@ class UltimoPasso(PassoDePlanoRecorrente):
 
 
 class FrequenciaPlanoAutomatico(UltimoPasso):
+    WEEKLY = 'WEEKLY'
     MONTHLY = 'MONTHLY'
+    BIMONTHLY = 'BIMONTHLY'
+    SEMIANNUALLY = 'SEMIANNUALLY'
+    YEARLY = 'YEARLY'
 
     def _manipular_payload(self, frequencia: str):
         self._pre_approval['period'] = frequencia
