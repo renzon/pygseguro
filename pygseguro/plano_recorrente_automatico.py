@@ -6,6 +6,7 @@ import pytz
 import requests
 
 from pygseguro.config import Config, get_config_padrao
+from pygseguro.exceptions import PagseguroException
 
 
 def _to_decimal_string(decimal: Decimal):
@@ -117,6 +118,8 @@ class UltimoPasso(PassoDePlanoRecorrente):
         response = requests.post(self._config.construir_url('/pre-approvals/request'), json=self._main_data,
                                  headers=headers)
         codigo_data = response.json()
+        if codigo_data.get('error', False):
+            raise PagseguroException(codigo_data, response.status_code)
         dt = datetime.fromisoformat(codigo_data['date']).astimezone(pytz.UTC)
         return PlanoAutomaticoRecorrente(codigo_data['code'], dt)
 

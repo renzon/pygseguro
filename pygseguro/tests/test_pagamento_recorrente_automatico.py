@@ -7,6 +7,7 @@ import pytz
 import responses
 
 from pygseguro import ConfigConta, CriadorPlanoRecorrente, SANDBOX, set_config_padrao
+from pygseguro.exceptions import PagseguroException
 
 
 @pytest.fixture
@@ -158,3 +159,21 @@ def test_criar_plano_com_tipos_de_frequencias(valores_automaticos, expected, fun
     payload = responses.calls[0].request.body
     decodec_payload = json.loads(payload, encoding='UTF-8')
     assert expected == decodec_payload
+
+
+@responses.activate
+def test_erro_em_dado():
+    response_content = {'error': True, 'errors': {'11003': 'receiverEmail invalid value.'}}
+    responses.add(responses.POST, 'https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request',
+                  json=response_content, status=400)
+    set_config_padrao(ConfigConta('renzo@python.pro.br', '396FC29DE4A54967BF6DCADE65100E88', SANDBOX))
+    criador = CriadorPlanoRecorrente()
+    plano_identificacao = criador.plano_automatico_idenficacao(
+        'SEU_CODIGO_DE_REFERENCIA',
+        'Plano Turma de Curso de Python',
+        'Plano de pagamento da turma Luciano Ramalho',
+        'renzo.python.pro.br')
+    expiracao = plano_identificacao.expiracao_em_meses(meses=10)
+    freq = expiracao.valores_automaticos(Decimal('180.00'), Decimal('30.39')).frequencia_mensal()
+    with pytest.raises(PagseguroException):
+        freq.criar_no_pagseguro()
