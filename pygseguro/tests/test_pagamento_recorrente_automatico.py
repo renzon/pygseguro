@@ -24,6 +24,18 @@ def valores_automaticos():
 
 
 @pytest.fixture
+def plano_identificacao():
+    set_config_padrao(ConfigConta('renzo@python.pro.br', '396FC29DE4A54967BF6DCADE65100E88', SANDBOX))
+    criador = CriadorPlanoRecorrente()
+    plano_identificacao = criador.plano_automatico_idenficacao(
+        'SEU_CODIGO_DE_REFERENCIA',
+        'Plano Turma de Curso de Python',
+        'Plano de pagamento da turma Luciano Ramalho',
+        'renzo@python.pro.br')
+    return plano_identificacao
+
+
+@pytest.fixture
 def gerador_plano_recorrente_automatico(valores_automaticos):
     freq_mensal = valores_automaticos.frequencia_mensal()
     limite_de_uso = freq_mensal.limite_de_uso(100)
@@ -155,6 +167,27 @@ def test_criar_plano_com_tipos_de_frequencias(valores_automaticos, expected, fun
     frequencia = getattr(valores_automaticos, funcao_tipo_frequencia)
     frequencia().criar_no_pagseguro()
     expected['preApproval']['period'] = tipo_frequencia
+
+    payload = responses.calls[0].request.body
+    decodec_payload = json.loads(payload, encoding='UTF-8')
+    assert expected == decodec_payload
+
+
+@responses.activate
+@pytest.mark.parametrize(
+    'funcao_tipo_expiracao, tipo_expiracao',
+    [
+        ('expiracao_em_dias', 'DAYS'),
+        ('expiracao_em_meses', 'MONTHS'),
+        ('expiracao_em_anos', 'YEARS'),
+    ]
+)
+def test_criar_plano_com_tipos_de_expiracoes(plano_identificacao, expected, funcao_tipo_expiracao, tipo_expiracao):
+    responses.add(responses.POST, 'https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request',
+                  json={'code': '5CDF6542C6C6D5F114674FB885E40FC0', 'date': '2019-04-29T21:38:04-03:00'}, status=200)
+    expiracao = getattr(plano_identificacao, funcao_tipo_expiracao)
+    expiracao(10).valores_automaticos(Decimal('180.00'), Decimal('30.39')).frequencia_mensal().criar_no_pagseguro()
+    expected['preApproval']['expiration']['unit'] = tipo_expiracao
 
     payload = responses.calls[0].request.body
     decodec_payload = json.loads(payload, encoding='UTF-8')

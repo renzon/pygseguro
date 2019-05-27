@@ -58,14 +58,25 @@ class PlanoAutomaticoIdentificacao(PassoDePlanoRecorrente):
             self._receiver['email'] = receiver_email
             self._main_data['receiver'] = self._receiver
 
+    def expiracao_em_dias(self, dias: int) -> 'Expiracao':
+        return self._setar_expiracao(Expiracao.DAYS, dias)
+
     def expiracao_em_meses(self, meses: int) -> 'Expiracao':
+        return self._setar_expiracao(Expiracao.MONTHS, meses)
+
+    def expiracao_em_anos(self, anos: int) -> 'Expiracao':
+        return self._setar_expiracao(Expiracao.YEARS, anos)
+
+    def _setar_expiracao(self, tipo_expiracao, valor) -> 'Expiracao':
         expiracao = self._construir_proximo_passo(Expiracao)
-        expiracao._manipular_payload(Expiracao.MONTHS, meses)
+        expiracao._manipular_payload(tipo_expiracao, valor)
         return expiracao
 
 
 class Expiracao(PassoDePlanoRecorrente):
+    DAYS = 'DAYS'
     MONTHS = 'MONTHS'
+    YEARS = 'YEARS'
 
     def _manipular_payload(self, unidade: str, valor: int):
         self._expiration['unit'] = unidade
