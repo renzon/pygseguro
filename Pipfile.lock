@@ -92,11 +92,9 @@
         },
         "codecov": {
             "hashes": [
-                "sha256:8ed8b7c6791010d359baed66f84f061bba5bd41174bf324c31311e8737602788",
-                "sha256:ae00d68e18d8a20e9c3288ba3875ae03db3a8e892115bf9b83ef20507732bed4"
+                "sha256:43ad6cb3e7de073d911aa3ab6a754db88d270fcb0e0d8e2062b964098a51d69b"
             ],
-            "index": "pypi",
-            "version": "==2.0.15"
+            "version": "==2.1.0"
         },
         "coverage": {
             "hashes": [
