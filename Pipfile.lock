@@ -225,11 +225,10 @@
         },
         "responses": {
             "hashes": [
-                "sha256:502d9c0c8008439cfcdef7e251f507fcfdd503b56e8c0c87c3c3e3393953f790",
-                "sha256:97193c0183d63fba8cd3a041c75464e4b09ea0aff6328800d1546598567dde0b"
+                "sha256:9476775d856d3c24ae660bbebe29fb6d789d4ad16acd723efbfb6ee20990b899",
+                "sha256:d8d0f655710c46fd3513b9202a7f0dcedd02ca0f8cf4976f27fa8ab5b81e656d"
             ],
-            "index": "pypi",
-            "version": "==0.10.6"
+            "version": "==0.13.4"
         },
         "six": {
             "hashes": [
