@@ -164,12 +164,8 @@
             "version": "==0.6.1"
         },
         "more-itertools": {
-            "hashes": [
-                "sha256:2112d2ca570bb7c3e53ea1a35cd5df42bb0fd10c45f0fb97178679c3c03d64c7",
-                "sha256:c3e4748ba1aad8dba30a4886b0b1a2004f9a863837b8654e7059eebf727afa5a"
-            ],
-            "markers": "python_version > '2.7'",
-            "version": "==7.0.0"
+            "hashes": [],
+            "version": "==10.1.0"
         },
         "pluggy": {
             "hashes": [
